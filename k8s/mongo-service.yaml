@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  namespace: devops-hub
+  labels:
+    app: mongo
+    tier: database
+spec:
+  selector:
+    app: mongo              # targets pods with label app=mongo
+  ports:
+    - protocol: TCP
+      port: 27017           # service port
+      targetPort: 27017     # pod port
+  type: ClusterIP           # only accessible inside cluster (correct for DB)

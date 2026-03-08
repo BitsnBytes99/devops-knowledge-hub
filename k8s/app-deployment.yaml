@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: devops-hub
+  labels:
+    app: devops-knowledge-hub
+    tier: frontend
+spec:
+  replicas: 2              # 2 copies running for high availability
+  selector:
+    matchLabels:
+      app: devops-knowledge-hub
+  strategy:
+    type: RollingUpdate    # update one pod at a time (zero downtime)
+    rollingUpdate:
+      maxSurge: 1          # allow 1 extra pod during update
+      maxUnavailable: 0    # never have 0 pods running
+  template:
+    metadata:
+      labels:
+        app: devops-knowledge-hub
+        tier: frontend
+    spec:
+      containers:
+        - name: devops-knowledge-hub
+          image: satyab2005/devops-knowledge-hub:latest
+          imagePullPolicy: Always   # always pull latest from Docker Hub
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: app-config    # loads all values from configmap
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:            # restart pod if app crashes
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:           # only send traffic when app is ready
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 3
+      restartPolicy: Always

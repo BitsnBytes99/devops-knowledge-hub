@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  namespace: devops-hub
+  labels:
+    app: mongo
+    tier: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mongo
+        tier: database
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7.0
+          ports:
+            - containerPort: 27017
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+          livenessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 60      # ✅ wait 60s before first check
+            periodSeconds: 30            # ✅ check every 30s
+            timeoutSeconds: 10           # ✅ give 10s to respond
+            failureThreshold: 5          # ✅ allow 5 failures before restart
+          readinessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 30      # ✅ wait 30s before first check
+            periodSeconds: 15            # ✅ check every 15s
+            timeoutSeconds: 10           # ✅ give 10s to respond
+            failureThreshold: 5          # ✅ allow 5 failures
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc

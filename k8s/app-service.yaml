@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: devops-hub
+  labels:
+    app: devops-knowledge-hub
+spec:
+  selector:
+    app: devops-knowledge-hub    # targets app pods
+  ports:
+    - protocol: TCP
+      port: 80                   # external port
+      targetPort: 3000           # app container port
+      nodePort: 30000            # access via minikube IP:30000
+  type: NodePort                 # exposes app outside cluster

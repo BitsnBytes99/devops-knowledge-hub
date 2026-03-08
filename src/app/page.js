@@ -1,65 +1,87 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import ArticleCard from "@/components/ArticleCard";
+import Link from "next/link";
+
+const TAGS = ["All", "Docker", "Kubernetes", "Jenkins", "Terraform", "AWS", "CI_CD", "Linux"];
 
 export default function Home() {
+  const [articles, setArticles] = useState([]);
+  const [search, setSearch] = useState("");
+  const [activeTag, setActiveTag] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { fetchArticles(); }, []);
+
+  const fetchArticles = async () => {
+    setLoading(true);
+    const res = await axios.get("/api/articles");
+    setArticles(res.data);
+    setLoading(false);
+  };
+
+  const filtered = articles.filter(a => {
+    const matchSearch = a.title.toLowerCase().includes(search.toLowerCase()) ||
+                        a.content.toLowerCase().includes(search.toLowerCase());
+    const matchTag = activeTag === "All" || a.tag === activeTag;
+    return matchSearch && matchTag;
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div style={{ minHeight: "100vh", background: "#0f1117", color: "#e2e8f0", fontFamily: "'Segoe UI', sans-serif" }}>
+      {/* Header */}
+      <div style={{ background: "#161b27", borderBottom: "1px solid #2d3548", padding: "20px 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: "24px", color: "#4a90d9" }}>⚙️ DevOps Knowledge Hub</h1>
+          <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>Your personal DevOps command reference</p>
+        </div>
+        <Link href="/create" style={{
+          background: "#4a90d9", color: "white", padding: "10px 22px",
+          borderRadius: "8px", textDecoration: "none", fontWeight: "600", fontSize: "14px"
+        }}>
+          + New Article
+        </Link>
+      </div>
+
+      <div style={{ padding: "32px 40px", maxWidth: "900px", margin: "0 auto" }}>
+        {/* Search */}
+        <input
+          placeholder="🔍  Search articles..."
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            width: "100%", padding: "12px 16px", borderRadius: "8px",
+            border: "1px solid #2d3548", background: "#1a1f2e", color: "#e2e8f0",
+            fontSize: "15px", marginBottom: "20px", boxSizing: "border-box"
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        {/* Tag Filters */}
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "28px" }}>
+          {TAGS.map(tag => (
+            <button key={tag} onClick={() => setActiveTag(tag)} style={{
+              padding: "6px 16px", borderRadius: "20px", border: "1px solid #2d3548",
+              background: activeTag === tag ? "#4a90d9" : "#1a1f2e",
+              color: activeTag === tag ? "white" : "#9ca3af",
+              cursor: "pointer", fontSize: "13px", fontWeight: "500"
+            }}>
+              {tag}
+            </button>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Articles */}
+        {loading ? (
+          <p style={{ color: "#6b7280", textAlign: "center" }}>Loading...</p>
+        ) : filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 0", color: "#6b7280" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
+            <p>No articles found. <Link href="/create" style={{ color: "#4a90d9" }}>Create one!</Link></p>
+          </div>
+        ) : (
+          filtered.map(a => <ArticleCard key={a._id} article={a} onDelete={fetchArticles} />)
+        )}
+      </div>
     </div>
   );
 }
