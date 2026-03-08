@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ⚙️ DevOps Knowledge Hub
 
-## Getting Started
+> Full-stack DevOps article manager — containerized, orchestrated and auto-deployed using industry-standard tools.
 
-First, run the development server:
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/satyab2005/devops-knowledge-hub)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![Jenkins](https://img.shields.io/badge/Jenkins-D33833?style=for-the-badge&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 📺 Demo
+
+[![Watch Demo](screenshots/youtube-thumbnail.png)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+
+---
+
+## 🏗️ Architecture
+
+```
+git push → GitHub → Jenkins (Webhook via Ngrok)
+                         │
+              ┌──────────┼──────────┐
+           Docker      Docker     kubectl
+           Build        Push      apply
+                         │
+                    Docker Hub
+                         │
+                   Kubernetes (Minikube)
+                   ├── App Pod x2
+                   ├── MongoDB Pod
+                   └── PVC (1Gi)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![Architecture](screenshots/architecture.png)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Quick Start
 
-## Learn More
+```bash
+# Clone
+git clone https://github.com/satyab2005/devops-knowledge-hub.git
+cd devops-knowledge-hub
 
-To learn more about Next.js, take a look at the following resources:
+# Run with Docker Compose
+docker compose up -d
+```
+Open: **http://localhost:3000**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ☸️ Kubernetes Deploy
 
-## Deploy on Vercel
+```bash
+minikube start --driver=docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/mongo-pvc.yaml
+kubectl apply -f k8s/mongo-deployment.yaml
+kubectl apply -f k8s/mongo-service.yaml
+kubectl apply -f k8s/app-deployment.yaml
+kubectl apply -f k8s/app-service.yaml
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+minikube service app-service -n devops-hub
+```
+
+---
+
+## 🔁 CI/CD Pipeline
+
+Every `git push` automatically:
+
+```
+Clone → Docker Build → Push to Hub → Deploy to K8s → Email Notification
+```
+
+![Jenkins Pipeline](screenshots/jenkins-pipeline.png)
+
+---
+
+## 📸 Screenshots
+
+| App | Kubernetes | Email |
+|---|---|---|
+| ![App](screenshots/app.png) | ![K8s](screenshots/k8s-pods.png) | ![Email](screenshots/email.png) |
+
+---
+
+## 🛠️ Tech Stack
+
+| Tool | Purpose |
+|---|---|
+| Next.js + MongoDB | Full stack application |
+| Docker + Docker Hub | Containerize and store image |
+| Kubernetes (Minikube) | Run with 2 replicas + PVC |
+| Jenkins + GitHub | CI/CD automation |
+| Ngrok | GitHub webhook tunnel |
+| Gmail SMTP | Pipeline notifications |
+
+---
+
+## 📁 Structure
+
+```
+devops-knowledge-hub/
+├── src/                    # Next.js app
+├── k8s/                    # Kubernetes manifests
+├── Dockerfile
+├── docker-compose.yml
+└── Jenkinsfile
+```
+
+---
+
+## 👨‍💻 Author
+
+**Satyajit**
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/satyab2005)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
+[![DockerHub](https://img.shields.io/badge/Docker_Hub-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/satyab2005)
+
+> ⭐ Star this repo if it helped you!
