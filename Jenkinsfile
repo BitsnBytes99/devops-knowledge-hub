@@ -47,7 +47,7 @@ pipeline {
 
     }
 
-        post {
+    post {
         success {
             echo '✅ Pipeline successful!'
             emailext(
