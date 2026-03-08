@@ -47,12 +47,52 @@ pipeline {
 
     }
 
-    post {
+        post {
         success {
             echo '✅ Pipeline successful!'
+            emailext(
+                to: "${EMAIL}",
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <h2>✅ Pipeline Successful!</h2>
+                    <p><b>Project:</b> ${env.JOB_NAME}</p>
+                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Status:</b> SUCCESS</p>
+                    <p><b>Duration:</b> ${currentBuild.durationString}</p>
+                    <br>
+                    <p>✅ Docker image pushed to Docker Hub</p>
+                    <p>✅ Deployed to Kubernetes successfully</p>
+                    <br>
+                    <a href="${env.BUILD_URL}">View Build Details</a>
+                """,
+                mimeType: 'text/html'
+            )
         }
+
         failure {
             echo '❌ Pipeline failed!'
+            emailext(
+                to: "${EMAIL}",
+                subject: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <h2>❌ Pipeline Failed!</h2>
+                    <p><b>Project:</b> ${env.JOB_NAME}</p>
+                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Status:</b> FAILED</p>
+                    <p><b>Duration:</b> ${currentBuild.durationString}</p>
+                    <br>
+                    <p>❌ Something went wrong in the pipeline</p>
+                    <p>Please check the logs for details</p>
+                    <br>
+                    <a href="${env.BUILD_URL}console">View Console Logs</a>
+                """,
+                mimeType: 'text/html'
+            )
+        }
+
+        always {
+            echo '📧 Sending notification...'
         }
     }
+
 }
