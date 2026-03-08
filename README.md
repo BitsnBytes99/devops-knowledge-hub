@@ -18,20 +18,6 @@
 
 ## 🏗️ Architecture
 
-```
-git push → GitHub → Jenkins (Webhook via Ngrok)
-                         │
-              ┌──────────┼──────────┐
-           Docker      Docker     kubectl
-           Build        Push      apply
-                         │
-                    Docker Hub
-                         │
-                   Kubernetes (Minikube)
-                   ├── App Pod x2
-                   ├── MongoDB Pod
-                   └── PVC (1Gi)
-```
 
 ![Architecture](screenshots/architecture.png)
 
@@ -119,8 +105,8 @@ devops-knowledge-hub/
 ## 👨‍💻 Author
 
 **Satyajit**
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/satyab2005)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
-[![DockerHub](https://img.shields.io/badge/Docker_Hub-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/satyab2005)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/BitsnBytes99)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/satyajit-borade-a7294b278/)
+[![DockerHub](https://img.shields.io/badge/Docker_Hub-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/u/satyab2005)
 
 > ⭐ Star this repo if it helped you!
