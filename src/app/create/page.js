@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const TAGS = ["Docker", "Kubernetes", "Jenkins", "Terraform", "AWS", "CI_CD", "Linux"];
+const TAGS = ["Docker", "Kubernetes", "Jenkins", "Terraform", "AWS", "CI_CD", "Linux", "DevOps"];
 
 export default function Create() {
   const router = useRouter();
